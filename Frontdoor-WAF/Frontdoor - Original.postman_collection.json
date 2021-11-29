@@ -1,0 +1,667 @@
+{
+	"info": {
+		"_postman_id": "602eba69-1d51-4ec9-af1e-6caa7840bbc0",
+		"name": "Frontdoor - Original",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Check GET request works",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//This should work as its a default test to just check the call is getting forwarded to the echo API\r",
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource?param1=sam1ple&param2=1",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					],
+					"query": [
+						{
+							"key": "param1",
+							"value": "sam1ple"
+						},
+						{
+							"key": "param2",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SQL Injection in Query String should fail with apostrophe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource?param1=sam1ple&param2='",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					],
+					"query": [
+						{
+							"key": "param1",
+							"value": "sam1ple"
+						},
+						{
+							"key": "param2",
+							"value": "'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SQL Injection in Query String should fail with 1=1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource?param1=sam1ple&param2=SELECT * FROM Users WHERE UserId = 105 OR 1=1;",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					],
+					"query": [
+						{
+							"key": "param1",
+							"value": "sam1ple"
+						},
+						{
+							"key": "param2",
+							"value": "SELECT * FROM Users WHERE UserId = 105 OR 1=1;"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check PUT request works",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//This should work as its a default test to just check the call is getting forwarded to the echo API\r",
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vehicleType\": \"train\",\r\n    \"maxSpeed\": 125,\r\n    \"avgSpeed\": 90,\r\n    \"speedUnit\": \"mph\"\r\n}"
+				},
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SQL Injection in Query String should fail with apostrophe",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vehicleType\": \"train\",\r\n    \"maxSpeed\": 125,\r\n    \"avgSpeed\": 90,\r\n    \"speedUnit\": \"mph\"\r\n}"
+				},
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource?test='",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					],
+					"query": [
+						{
+							"key": "test",
+							"value": "'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SQL Injection in Query String should fail with 1=1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vehicleType\": \"train\",\r\n    \"maxSpeed\": 125,\r\n    \"avgSpeed\": 90,\r\n    \"speedUnit\": \"mph\"\r\n}"
+				},
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource?test=SELECT * FROM Users WHERE UserId = 105 OR 1=1;",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					],
+					"query": [
+						{
+							"key": "test",
+							"value": "SELECT * FROM Users WHERE UserId = 105 OR 1=1;"
+						},
+						{
+							"key": null,
+							"value": "1=1;",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SQL Injection in plain text body should fail with 1=1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"//These tests will fail because WAF isnt blocking this request for messages in the body when its text plain\r",
+							"\r",
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "SELECT * FROM Users WHERE UserId = 105 OR 1=1;"
+				},
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SQL Injection in Json body should fail with 1=1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"//These tests will fail because the WAF doesnt block messages if the body is application json\r",
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vehicleType\": \"train\",\r\n    \"maxSpeed\": 125,\r\n    \"avgSpeed\": 90,\r\n    \"speedUnit\": \"SELECT * FROM Users WHERE UserId = 105 OR 1=1;\"\r\n}"
+				},
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SQL Injection in form body should fail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"warning": "This is a duplicate header and will be overridden by the Content-Type header generated by Postman.",
+						"key": "Content-Type",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "SQL",
+							"value": "SELECT * FROM Users WHERE UserId = 105 OR 1=1;",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "XSS in form parameter should fail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "test",
+							"value": "<script>alert(“This is a XSS Exploit Test”)</script>",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "XSS in Json body should fail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//These tests will fail because the message body isnt checked for json\r",
+							"\r",
+							"pm.test(\"Status code is as expected\", function () \r",
+							"{\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is blocked by WAF\", function () {\t\r",
+							"    var expectedErrorMessage = pm.variables.get(\"ExpectedWafErrorMessage\");\r",
+							"    pm.expect(pm.response.text()).to.equal(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vehicleType\": \"train\",\r\n    \"maxSpeed\": 125,\r\n    \"avgSpeed\": 90,\r\n    \"speedUnit\": \"<script>alert(“This is a XSS Exploit Test”)</script>\"\r\n}"
+				},
+				"url": {
+					"raw": "https://{{api_host}}/echo/resource",
+					"protocol": "https",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"echo",
+						"resource"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api_key",
+			"value": "add your key here"
+		},
+		{
+			"key": "ExpectedWafErrorMessage",
+			"value": "Blocked by WAF rule from Frontdoor Original"
+		},
+		{
+			"key": "api_host",
+			"value": "add your host here"
+		}
+	]
+}
