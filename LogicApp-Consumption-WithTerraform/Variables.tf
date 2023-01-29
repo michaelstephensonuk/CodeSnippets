@@ -7,27 +7,27 @@
 
 variable "logicapps_resource_group" {
   description = "The name of the resource group for logic apps"
-  default     = "Blog_LogicApp_Consumption_Terraform"
+  default     = "LogicApp_RG"
 }
 
 variable "apim_resource_group" {
   description = "The name of the resource group for APIM"
-  default     = "Blog_APIM_and_Frontdoor"
+  default     = "APIM_RG"
 }
 
 variable "apim_name" {
   description = "The name of the APIM instance"
-  default     = "ms-blog-apim"
+  default     = "my-apim"
 }
 
 variable "keyvault_name" {
   description = "The name of the Key Vault instance"
-  default     = "MikesKeyVault1"
+  default     = "my-keyvault"
 }
 
 variable "keyvault_resource_group" {
   description = "The resource group name of the Key Vault instance"
-  default     = "Blog_LogicApp_Config"
+  default     = "KeyVaultGG"
 }
 
 variable "servicebus_name" {
@@ -37,17 +37,17 @@ variable "servicebus_name" {
 
 variable "servicebus_resource_group" {
   description = "The resource group name of the service bus namespace"
-  default     = "Blog_LogicApp_Testing"
+  default     = "ServiceBus-RG"
 }
 
 variable "functions_name" {
   description = "The name of the function app"
-  default     = "blog-ms-la-helpers"
+  default     = "my-functions"
 }
 
 variable "functions_resource_group" {
   description = "The resource group name of the function app is"
-  default     = "Platform_Functions"
+  default     = "Functions_RG"
 }
 
 
