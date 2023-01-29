@@ -1,0 +1,125 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "queue_name": {
+      "defaultValue": {},
+      "type": "String"
+    }
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Http",
+      "inputs": {
+        "schema": {}
+      }
+    }
+  },
+  "actions": {
+    "Demo-LogicApp-2": {
+      "runAfter": {
+        "echo-helper-function": [
+          "Succeeded"
+        ]
+      },
+      "type": "Workflow",
+      "inputs": {
+        "body": {},
+        "host": {
+          "triggerName": "manual",
+          "workflow": {
+            "id": "/subscriptions/${subscription_id}/resourceGroups/${logicAppResourceGroupName}/providers/Microsoft.Logic/workflows/Demo-LogicApp-2"
+          }
+        }
+      }
+    },
+    "Get_rows_(V2)": {
+      "runAfter": {
+        "apim-logicapp-helper-echo-token": [
+          "Succeeded"
+        ]
+      },
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['sql_1']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[local_populations]'))}/items",
+        "queries": {
+          "$top": 10
+        }
+      }
+    },
+    "Send_message": {
+      "runAfter": {
+        "Demo-LogicApp-2": [
+          "Succeeded"
+        ]
+      },
+      "type": "ApiConnection",
+      "inputs": {
+        "body": {
+          "ContentData": "@{base64(concat('{','\n','\"Hello\":\"World\"','\n','}'))}",
+          "ContentType": "application/json"
+        },
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['servicebus']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/@{encodeURIComponent(encodeURIComponent(parameters('queue_name')))}/messages",
+        "queries": {
+          "systemProperties": "Run Details"
+        }
+      }
+    },
+    "apim-logicapp-helper-echo-token": {
+      "runAfter": {},
+      "type": "ApiManagement",
+      "inputs": {
+        "api": {
+          "id": "/subscriptions/${subscription_id}/resourceGroups/${apimResourceGroupName}/providers/Microsoft.ApiManagement/service/${apimInstanceName}/apis/utility-logicapp-helpers"
+        },
+        "authentication": {
+          "audience": "5db68517-bc22-4f28-9141-5fb285463d0a",
+          "identity": "/subscriptions/${subscription_id}/resourceGroups/${logicAppResourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/logic-app-terraform",
+          "type": "ManagedServiceIdentity"
+        },
+        "method": "get",
+        "pathTemplate": {
+          "parameters": {},
+          "template": "/utility/logicapp/helpers/logicapp/echo/token"
+        }
+      }
+    },
+    "echo-helper-function": {
+      "runAfter": {
+        "Get_rows_(V2)": [
+          "Succeeded"
+        ]
+      },
+      "type": "Function",
+      "inputs": {
+        "body": {
+          "Hello": "World"
+        },
+        "function": {
+          "id": "/subscriptions/${subscription_id}/resourceGroups/${functionsResourceGroupName}/providers/Microsoft.Web/sites/${helperFunctionAppsName}/functions/echo-helper-function"
+        },
+        "retryPolicy": {
+          "type": "none"
+        }
+      }
+    }
+  },
+  "outputs": {}
+}
