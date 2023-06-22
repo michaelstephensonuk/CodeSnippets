@@ -1,0 +1,442 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Append_to_string_variable_-_Complexity": {
+                "inputs": {
+                    "name": "documentation",
+                    "value": "# Complexity\n\n@{body('Chat_GPT_-_Complexity')}\n\n"
+                },
+                "runAfter": {
+                    "Chat_GPT_-_Complexity": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "AppendToStringVariable"
+            },
+            "Append_to_string_variable_-_Intention": {
+                "inputs": {
+                    "name": "documentation",
+                    "value": "@{body('Chat_GPT_-_What_is_logic_app_intention')}\n\n"
+                },
+                "runAfter": {
+                    "Chat_GPT_-_What_is_logic_app_intention": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "AppendToStringVariable"
+            },
+            "Append_to_string_variable_-_Logic_App_Details": {
+                "inputs": {
+                    "name": "documentation",
+                    "value": "# Key Details\n\n| Key | Value |\n| ----| ---- |\n| Name | @{body('Parse_JSON_-_Get_Logic_App')?['name']}  |\n| Resource ID |  @{body('Parse_JSON_-_Get_Logic_App')?['id']} |\n| Location |  @{body('Parse_JSON_-_Get_Logic_App')?['location']}  |\n| Resource Group |  @{body('Parse_JSON_-_Get_Logic_App')?['resourceGroup']}   |\n| Subscription ID |  @{body('Parse_JSON_-_Get_Logic_App')?['subscriptionId']}  |\n| Tenant ID | @{body('Parse_JSON_-_Get_Logic_App')?['tenantId']}   |\n| Managed by |  @{body('Parse_JSON_-_Get_Logic_App')?['managedBy']}  |\n| Identity |  @{body('Parse_JSON_-_Get_Logic_App')?['identity']}  |\n| Plan |  @{body('Parse_JSON_-_Get_Logic_App')?['plan']}  |\n| SKU |   @{body('Parse_JSON_-_Get_Logic_App')?['sku']} |\n\n\n"
+                },
+                "runAfter": {
+                    "Append_to_string_variable_-_Intention": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "AppendToStringVariable"
+            },
+            "Append_to_string_variable_-_Mermaid_Flow_Chart": {
+                "inputs": {
+                    "name": "documentation",
+                    "value": "# Mermaid Flow Chart\n::: mermaid\n@{body('Chat_GPT_-_Mermaid_Flow_Chart')}\n:::"
+                },
+                "runAfter": {
+                    "Chat_GPT_-_Mermaid_Flow_Chart": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "AppendToStringVariable"
+            },
+            "Append_to_string_variable_-_Mermaid_Sequence_Diagram": {
+                "inputs": {
+                    "name": "documentation",
+                    "value": "# Mermaid Sequence Diagram\n::: mermaid\n@{body('Chat_GPT_-_Mermaid_Sequence_Diagram')}\n:::\n"
+                },
+                "runAfter": {
+                    "Chat_GPT_-_Mermaid_Sequence_Diagram": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "AppendToStringVariable"
+            },
+            "Append_to_string_variable_-_Overview": {
+                "inputs": {
+                    "name": "documentation",
+                    "value": "# Overview\n\n@{body('Chat_GPT_-_Give_me_an_overview_of_this_logic_app')}\n\n"
+                },
+                "runAfter": {
+                    "Chat_GPT_-_Give_me_an_overview_of_this_logic_app": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "AppendToStringVariable"
+            },
+            "Append_to_string_variable_-_Tags": {
+                "inputs": {
+                    "name": "documentation",
+                    "value": "# Tags\n\n@{body('Chat_GPT_-_Create_Tags_table')}\n\n"
+                },
+                "runAfter": {
+                    "Chat_GPT_-_Create_Tags_table": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "AppendToStringVariable"
+            },
+            "Chat_GPT_-_Complexity": {
+                "inputs": {
+                    "body": "I am trying to workout the complexity of this logic app\nHow many actions are in it?\nDoes it contain loops?\nHow many conditions are in it?\nDoes it use an integration account?\nDoes it contain maps and schemas?\nHow many variables and compose shapes are there?\nHow many lines of code?\n\n\n@{body('Parse_JSON_-_Get_Logic_App')?['properties']}",
+                    "host": {
+                        "triggerName": "manual",
+                        "workflow": {
+                            "id": "/subscriptions/92357fca-2391-4501-b98a-6a93589ba4c9/resourceGroups/Demo_Map_AI/providers/Microsoft.Logic/workflows/la-map-ai"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Append_to_string_variable_-_Overview": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Workflow"
+            },
+            "Chat_GPT_-_Create_Tags_table": {
+                "inputs": {
+                    "body": "Can you convert the below json object to a table in markdown format\nbut can you make the table vertical rather than horizontal\n@{body('Parse_JSON_-_Get_Logic_App')?['tags']}",
+                    "host": {
+                        "triggerName": "manual",
+                        "workflow": {
+                            "id": "/subscriptions/92357fca-2391-4501-b98a-6a93589ba4c9/resourceGroups/Demo_Map_AI/providers/Microsoft.Logic/workflows/la-map-ai"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Append_to_string_variable_-_Logic_App_Details": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Workflow"
+            },
+            "Chat_GPT_-_Give_me_an_overview_of_this_logic_app": {
+                "inputs": {
+                    "body": "Can describe the high-level sequence of events in this Logic App definition\nPlease ignore the variable actions\n\n@{body('Parse_JSON_-_Get_Logic_App')?['properties']}",
+                    "host": {
+                        "triggerName": "manual",
+                        "workflow": {
+                            "id": "/subscriptions/92357fca-2391-4501-b98a-6a93589ba4c9/resourceGroups/Demo_Map_AI/providers/Microsoft.Logic/workflows/la-map-ai"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Append_to_string_variable_-_Tags": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Workflow"
+            },
+            "Chat_GPT_-_Mermaid_Flow_Chart": {
+                "inputs": {
+                    "body": "Please ignore the initialize variable actions in this logic app definition\n@{body('Parse_JSON_-_Get_Logic_App')?['properties']}\nAlso ignore set variable and compose and delay actions\nCan you then describe the high level sequence of events in the logic app definition using mermaid flow chart in a format which could be pasted into an Azure DevOps wiki\nRemove the ```mermaid from the start\nRemove the ``` from the end",
+                    "host": {
+                        "triggerName": "manual",
+                        "workflow": {
+                            "id": "/subscriptions/92357fca-2391-4501-b98a-6a93589ba4c9/resourceGroups/Demo_Map_AI/providers/Microsoft.Logic/workflows/la-map-ai"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Append_to_string_variable_-_Mermaid_Sequence_Diagram": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Workflow"
+            },
+            "Chat_GPT_-_Mermaid_Sequence_Diagram": {
+                "inputs": {
+                    "body": "Please ignore the initialize variable actions in this logic app definition\n@{body('Parse_JSON_-_Get_Logic_App')?['properties']}\nAlso ignore set variable and compose and delay actions\nCan you then describe the high level sequence of events in the logic app definition using mermaid sequence diagram in a format which could be pasted into an Azure DevOps wiki\nRemove the ```mermaid from the start\nRemove the ``` from the end",
+                    "host": {
+                        "triggerName": "manual",
+                        "workflow": {
+                            "id": "/subscriptions/92357fca-2391-4501-b98a-6a93589ba4c9/resourceGroups/Demo_Map_AI/providers/Microsoft.Logic/workflows/la-map-ai"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Append_to_string_variable_-_Complexity": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Workflow"
+            },
+            "Chat_GPT_-_What_is_logic_app_intention": {
+                "inputs": {
+                    "body": "Can you workout the intention of this logic app\n@{body('Parse_JSON_-_Get_Logic_App')}",
+                    "host": {
+                        "triggerName": "manual",
+                        "workflow": {
+                            "id": "/subscriptions/92357fca-2391-4501-b98a-6a93589ba4c9/resourceGroups/Demo_Map_AI/providers/Microsoft.Logic/workflows/la-map-ai"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON_-_Get_Logic_App": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Workflow"
+            },
+            "Compose_-_Get_Logic_App_Query": {
+                "inputs": "resources \n| where type == 'microsoft.logic/workflows'\n| where id == '@{body('Parse_JSON')?['id']}'",
+                "runAfter": {
+                    "Initialize_variable_-_Documentation": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Compose"
+            },
+            "HTTP_-_Get_DevOps_Page": {
+                "inputs": {
+                    "headers": {
+                        "Authorization": "Basic @{variables('devOpsAuth')}"
+                    },
+                    "method": "GET",
+                    "uri": "https://@{parameters('devOpsOrganizationId')}.visualstudio.com/@{parameters('devOpsProject')}/_apis/wiki/wikis/@{parameters('devOpsWikiId')}/pages?path=@{body('Parse_JSON_-_Get_Logic_App')?['name']}&api-version=7.0"
+                },
+                "runAfter": {
+                    "Append_to_string_variable_-_Mermaid_Flow_Chart": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http"
+            },
+            "HTTP_-_Get_Logic_App": {
+                "inputs": {
+                    "authentication": {
+                        "audience": "https://management.azure.com",
+                        "type": "ManagedServiceIdentity"
+                    },
+                    "body": {
+                        "query": "@{outputs('Compose_-_Get_Logic_App_Query')}",
+                        "subscriptions": [
+                            "@{parameters('subscriptionId')}"
+                        ]
+                    },
+                    "method": "POST",
+                    "uri": "https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01"
+                },
+                "runAfter": {
+                    "Compose_-_Get_Logic_App_Query": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http"
+            },
+            "HTTP_-_Upsert_Wiki_Page": {
+                "inputs": {
+                    "body": {
+                        "content": "@{variables('documentation')}"
+                    },
+                    "headers": {
+                        "Authorization": "Basic @{variables('devOpsAuth')}",
+                        "If-Match": "@body('Parse_JSON_-_Existing_DevOps_Page')?['ETag']"
+                    },
+                    "method": "PUT",
+                    "retryPolicy": {
+                        "type": "none"
+                    },
+                    "uri": "https://@{parameters('devOpsOrganizationId')}.visualstudio.com/@{parameters('devOpsProject')}/_apis/wiki/wikis/@{parameters('devOpsWikiId')}/pages?path=@{body('Parse_JSON_-_Get_Logic_App')?['name']}&api-version=7.0"
+                },
+                "runAfter": {
+                    "Parse_JSON_-_Existing_DevOps_Page": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http"
+            },
+            "Initialize_variable_-_Documentation": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "documentation",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Initialize_variable_-_devOpsAuth": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "devOpsAuth",
+                            "type": "string",
+                            "value": "@{base64(concat(':', parameters('devOpsToken')))}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_devOpsPageEtag": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Initialize_variable_-_devOpsPageEtag": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "devOpsPageEtag",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {},
+                "type": "InitializeVariable"
+            },
+            "Parse_JSON": {
+                "inputs": {
+                    "content": "@triggerBody()",
+                    "schema": {
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "resourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_-_devOpsAuth": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Parse_JSON_-_Existing_DevOps_Page": {
+                "inputs": {
+                    "content": "@outputs('HTTP_-_Get_DevOps_Page')['headers']",
+                    "schema": {
+                        "properties": {
+                            "ETag": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "HTTP_-_Get_DevOps_Page": [
+                        "Succeeded",
+                        "Failed"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Parse_JSON_-_Get_Logic_App": {
+                "inputs": {
+                    "content": "@first(body('HTTP_-_Get_Logic_App')?['data'])",
+                    "schema": {
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "identity": {},
+                            "location": {
+                                "type": "string"
+                            },
+                            "managedBy": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "plan": {},
+                            "properties": {
+                                "properties": {},
+                                "type": "object"
+                            },
+                            "resourceGroup": {
+                                "type": "string"
+                            },
+                            "sku": {},
+                            "subscriptionId": {
+                                "type": "string"
+                            },
+                            "tags": {
+                                "properties": {},
+                                "type": [
+                                    "object",
+                                    "null"
+                                ]
+                            },
+                            "tenantId": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "HTTP_-_Get_Logic_App": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "devOpsOrganizationId": {
+                "defaultValue": "TBC",
+                "type": "String"
+            },
+            "devOpsProject": {
+                "defaultValue": "TBC",
+                "type": "String"
+            },
+            "devOpsToken": {
+                "defaultValue": "TBC",
+                "type": "String"
+            },
+            "devOpsWikiId": {
+                "defaultValue": "TBC",
+                "type": "String"
+            },
+            "subscriptionId": {
+                "defaultValue": "TBC",
+                "type": "String"
+            }
+        },
+        "triggers": {
+            "manual": {
+                "inputs": {
+                    "schema": {}
+                },
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    },
+    "parameters": {}
+}
