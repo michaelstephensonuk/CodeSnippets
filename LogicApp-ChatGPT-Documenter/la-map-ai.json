@@ -1,0 +1,137 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each": {
+                "actions": {
+                    "Set_variable": {
+                        "inputs": {
+                            "name": "response",
+                            "value": "@items('For_each')?['message']?['content']"
+                        },
+                        "runAfter": {},
+                        "type": "SetVariable"
+                    }
+                },
+                "foreach": "@body('Parse_JSON')?['choices']",
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Foreach"
+            },
+            "HTTP_-_Call_Chat_GPT": {
+                "inputs": {
+                    "body": {
+                        "messages": [
+                            {
+                                "content": "@{triggerBody()}",
+                                "role": "user"
+                            }
+                        ],
+                        "model": "gpt-3.5-turbo"
+                    },
+                    "headers": {
+                        "Authorization": "Bearer @{parameters('token')}",
+                        "Content-Type": "application/json",
+                        "OpenAI-Organization": "@parameters('org')"
+                    },
+                    "method": "POST",
+                    "uri": "https://api.openai.com/v1/chat/completions"
+                },
+                "runAfter": {
+                    "Initialize_variable_-_response": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http"
+            },
+            "Initialize_variable_-_response": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "response",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {},
+                "type": "InitializeVariable"
+            },
+            "Parse_JSON": {
+                "inputs": {
+                    "content": "@body('HTTP_-_Call_Chat_GPT')",
+                    "schema": {
+                        "properties": {
+                            "choices": {
+                                "items": {
+                                    "properties": {
+                                        "message": {
+                                            "properties": {
+                                                "content": {
+                                                    "type": "string"
+                                                },
+                                                "role": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "HTTP_-_Call_Chat_GPT": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Response": {
+                "inputs": {
+                    "body": "@variables('response')",
+                    "statusCode": 200
+                },
+                "kind": "Http",
+                "runAfter": {
+                    "For_each": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Response"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "org": {
+                "defaultValue": "",
+                "type": "String"
+            },
+            "token": {
+                "defaultValue": "",
+                "type": "String"
+            }
+        },
+        "triggers": {
+            "manual": {
+                "inputs": {
+                    "schema": {}
+                },
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    },
+    "parameters": {}
+}
