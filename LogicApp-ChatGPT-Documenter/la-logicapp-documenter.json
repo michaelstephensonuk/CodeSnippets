@@ -1,0 +1,126 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each_-_Logic_App": {
+                "actions": {
+                    "la-logicapp-document-single-logicapp": {
+                        "inputs": {
+                            "body": "@items('For_each_-_Logic_App')",
+                            "host": {
+                                "triggerName": "manual",
+                                "workflow": {
+                                    "id": "/subscriptions/92357fca-2391-4501-b98a-6a93589ba4c9/resourceGroups/Demo_LogicApp_Documenter/providers/Microsoft.Logic/workflows/la-logicapp-document-single-logicapp"
+                                }
+                            }
+                        },
+                        "runAfter": {},
+                        "type": "Workflow"
+                    }
+                },
+                "foreach": "@body('Parse_JSON_-_Get_Logic_Apps')?['data']",
+                "runAfter": {
+                    "Parse_JSON_-_Get_Logic_Apps": [
+                        "Succeeded"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "repetitions": 1
+                    }
+                },
+                "type": "Foreach"
+            },
+            "HTTP_-_Get_Logic_Apps": {
+                "inputs": {
+                    "authentication": {
+                        "audience": "https://management.azure.com",
+                        "type": "ManagedServiceIdentity"
+                    },
+                    "body": {
+                        "query": "resources | where type == 'microsoft.logic/workflows' | project resourceGroup, id, name",
+                        "subscriptions": [
+                            "@{parameters('subscriptionId')}"
+                        ]
+                    },
+                    "method": "POST",
+                    "uri": "https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01"
+                },
+                "runAfter": {
+                    "Initialize_variable_-_Documentation": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http"
+            },
+            "Initialize_variable_-_Documentation": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "documentation",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {},
+                "type": "InitializeVariable"
+            },
+            "Parse_JSON_-_Get_Logic_Apps": {
+                "inputs": {
+                    "content": "@body('HTTP_-_Get_Logic_Apps')",
+                    "schema": {
+                        "properties": {
+                            "data": {
+                                "items": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "resourceGroup": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "resourceGroup",
+                                        "id",
+                                        "name"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "HTTP_-_Get_Logic_Apps": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "subscriptionId": {
+                "defaultValue": "TBC",
+                "type": "String"
+            }
+        },
+        "triggers": {
+            "manual": {
+                "inputs": {
+                    "schema": {}
+                },
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    },
+    "parameters": {}
+}
