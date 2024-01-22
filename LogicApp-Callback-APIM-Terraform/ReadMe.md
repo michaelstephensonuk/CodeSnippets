@@ -1,4 +1,7 @@
+This demo shows how to use terraform to build an api in azure apim which sits as a proxy in front of Logic Apps
 
+
+# Terraform Commands
 
 terraform init
 terraform validate
@@ -8,6 +11,7 @@ terraform apply -var-file="Local.tfvars"
 
 
 # Set policy to call backend
+Notes on different ways to implement the policy
 
 ## Logic App Consumption
 
