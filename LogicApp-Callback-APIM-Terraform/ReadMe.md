@@ -1,6 +1,4 @@
-92357fca-2391-4501-b98a-6a93589ba4c9
 
-az account set --subscription "Blog-Microsoft Azure Sponsorship"
 
 terraform init
 terraform validate
