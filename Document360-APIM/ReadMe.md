@@ -1,8 +1,8 @@
 This below sample yaml file is the tasks from my demo at the integrate summit where I show how to use an Azure DevOps pipeline to automate documentation updates from Azure APIM to Document360
 
 The video for this is here
-[![Watch the video]]([https://youtu.be/vt5fpE0bzSY](https://www.youtube.com/watch?v=EA-oT2zEiOA))
 
+[<img src="https://i.ytimg.com/vi/Hc79sDi3f0U/maxresdefault.jpg" width="50%">]([https://www.youtube.com/watch?v=Hc79sDi3f0U](https://www.youtube.com/watch?v=EA-oT2zEiOA) "APIM Documentation in Document360")
 
 The pipeline is
 
