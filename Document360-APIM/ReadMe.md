@@ -2,7 +2,7 @@ This below sample yaml file is the tasks from my demo at the integrate summit wh
 
 The video for this is here
 
-[<img src="https://i.ytimg.com/vi/Hc79sDi3f0U/maxresdefault.jpg" width="50%">]([https://www.youtube.com/watch?v=Hc79sDi3f0U](https://www.youtube.com/watch?v=EA-oT2zEiOA) "APIM Documentation in Document360")
+https://www.youtube.com/watch?v=EA-oT2zEiOA
 
 The pipeline is
 
