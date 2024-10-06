@@ -1,0 +1,193 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+      "Recurrence": {
+        "type": "Recurrence",
+        "recurrence": {
+          "frequency": "Day",
+          "interval": 1,
+          "schedule": {
+            "hours": [
+              "0"
+            ],
+            "minutes": [
+              5
+            ]
+          }
+        }
+      }
+    },
+    "actions": {
+      "Delay_-_Allow_SFTP_interfaces_to_run": {
+        "type": "Wait",
+        "inputs": {
+          "interval": {
+            "count": 45,
+            "unit": "Minute"
+          }
+        },
+        "runAfter": {
+          "HTTP_-_Enable_SFTP": [
+            "Succeeded"
+          ]
+        }
+      },
+      "HTTP_-_Check_Current_Status": {
+        "type": "Http",
+        "inputs": {
+          "uri": "https://management.azure.com/subscriptions/@{variables('subscriptionId')}/resourceGroups/@{variables('resourceGroup')}/providers/Microsoft.Storage/storageAccounts/@{variables('storageAccountName')}?api-version=@{variables('apiVersion')}",
+          "method": "GET",
+          "authentication": {
+            "audience": "https://management.azure.com",
+            "identity": "/subscriptions/TBC/resourceGroups/TBC/providers/Microsoft.ManagedIdentity/userAssignedIdentities/eai_demo_trusted_logicapp",
+            "type": "ManagedServiceIdentity"
+          }
+        },
+        "runAfter": {
+          "HTTP_-_Disable_SFTP": [
+            "Succeeded"
+          ]
+        }
+      },
+      "HTTP_-_Disable_SFTP": {
+        "type": "Http",
+        "inputs": {
+          "uri": "https://management.azure.com/subscriptions/@{variables('subscriptionId')}/resourceGroups/@{variables('resourceGroup')}/providers/Microsoft.Storage/storageAccounts/@{variables('storageAccountName')}?api-version=@{variables('apiVersion')}",
+          "method": "PATCH",
+          "body": {
+            "properties": {
+              "isSftpEnabled": false
+            }
+          },
+          "authentication": {
+            "audience": "https://management.azure.com",
+            "identity": "/subscriptions/TBC/resourceGroups/TBC/providers/Microsoft.ManagedIdentity/userAssignedIdentities/eai_demo_trusted_logicapp",
+            "type": "ManagedServiceIdentity"
+          }
+        },
+        "runAfter": {
+          "Delay_-_Allow_SFTP_interfaces_to_run": [
+            "Succeeded"
+          ]
+        }
+      },
+      "HTTP_-_Enable_SFTP": {
+        "type": "Http",
+        "inputs": {
+          "uri": "https://management.azure.com/subscriptions/@{variables('subscriptionId')}/resourceGroups/@{variables('resourceGroup')}/providers/Microsoft.Storage/storageAccounts/@{variables('storageAccountName')}?api-version=@{variables('apiVersion')}",
+          "method": "PATCH",
+          "body": {
+            "properties": {
+              "isSftpEnabled": true
+            }
+          },
+          "authentication": {
+            "audience": "https://management.azure.com",
+            "identity": "/subscriptions/TBC/resourceGroups/TBC/providers/Microsoft.ManagedIdentity/userAssignedIdentities/eai_demo_trusted_logicapp",
+            "type": "ManagedServiceIdentity"
+          }
+        },
+        "runAfter": {
+          "HTTP_-_Get_Current_Status": [
+            "Succeeded"
+          ]
+        }
+      },
+      "HTTP_-_Get_Current_Status": {
+        "type": "Http",
+        "inputs": {
+          "uri": "https://management.azure.com/subscriptions/@{variables('subscriptionId')}/resourceGroups/@{variables('resourceGroup')}/providers/Microsoft.Storage/storageAccounts/@{variables('storageAccountName')}?api-version=@{variables('apiVersion')}",
+          "method": "GET",
+          "authentication": {
+            "audience": "https://management.azure.com",
+            "identity": "/subscriptions/TBC/resourceGroups/TBC/providers/Microsoft.ManagedIdentity/userAssignedIdentities/eai_demo_trusted_logicapp",
+            "type": "ManagedServiceIdentity"
+          }
+        },
+        "runAfter": {
+          "Initialize_variable_-_storageAccountName": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Initialize_variable_-_apiVersion": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "apiVersion",
+              "type": "string",
+              "value": "2022-09-01"
+            }
+          ]
+        },
+        "runAfter": {}
+      },
+      "Initialize_variable_-_resourceGroup": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "resourceGroup",
+              "type": "string",
+              "value": "TBC"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_-_subscriptionId": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Initialize_variable_-_storageAccountName": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "storageAccountName",
+              "type": "string",
+              "value": "TBC"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_-_resourceGroup": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Initialize_variable_-_subscriptionId": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "subscriptionId",
+              "type": "string",
+              "value": "TBC"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_-_apiVersion": [
+            "Succeeded"
+          ]
+        }
+      }
+    },
+    "outputs": {},
+    "parameters": {
+      "$connections": {
+        "type": "Object",
+        "defaultValue": {}
+      }
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "value": {}
+    }
+  }
+}
